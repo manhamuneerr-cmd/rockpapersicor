@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ULTIMATE BATTLE WITH THE SYSTEM</title>
     <style>
-        /* CSS Styles to make it look like a "System" Interface */
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #121212; /* Terminal dark background */
+            color: #00ff41; /* Hacker/Terminal green */
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -20,229 +20,215 @@
         }
 
         h1 {
-            color: #58a6ff;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+            color: #fff;
+            text-shadow: 0 0 10px #00ff41;
+            font-size: 1.5rem;
         }
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
+        .game-container {
+            border: 2px solid #333;
+            background-color: #000;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
         }
 
-        .score-board {
-            display: flex;
-            justify-content: space-between;
-            background: #21262d;
-            padding: 15px;
-            border-radius: 8px;
+        .scoreboard {
+            border-bottom: 1px dashed #555;
+            padding-bottom: 10px;
             margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
-            border: 1px solid #30363d;
+            font-size: 1.1rem;
+            color: #fff;
         }
 
-        .game-area {
+        .log-area {
             min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             margin-bottom: 20px;
-        }
-
-        .message {
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         button {
-            background-color: #238636;
-            color: white;
-            border: none;
-            padding: 15px;
-            font-size: 1em;
-            border-radius: 6px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00ff41;
+            padding: 10px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s;
         }
 
         button:hover {
-            background-color: #2ea043;
-            transform: scale(1.05);
-        }
-
-        button:active {
-            transform: scale(0.95);
+            background-color: #00ff41;
+            color: #000;
         }
 
         .btn-exit {
-            background-color: #da3633;
-            grid-column: span 3; /* Make exit button full width */
-            margin-top: 10px;
+            border-color: #ff4444;
+            color: #ff4444;
         }
 
         .btn-exit:hover {
-            background-color: #f85149;
+            background-color: #ff4444;
+            color: white;
         }
 
-        .system-choice {
-            font-size: 1.5em;
-            color: #d2a8ff; 
-            margin: 10px 0;
-        }
-
-        /* Hidden class to manage game state */
         .hidden { display: none; }
+        
+        /* Specific text colors matching your vibe */
+        .system-text { color: #ffab00; }
+        .win-text { color: #00ff41; font-weight: bold; }
+        .lose-text { color: #ff4444; font-weight: bold; }
+        .draw-text { color: #00d2ff; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="game-container">
+    <div class="game-container">
         <h1>⚔️ ULTIMATE BATTLE ⚔️</h1>
-        <p>You vs the System<br>Rock 🪨  Paper 📄  Scissors ✂️</p>
-
-        <div class="score-board">
-            <span id="player-score-display">Unknown Hero: 0</span>
-            <span id="system-score-display">System 🤖: 0</span>
+        
+        <div id="setup-screen">
+            <p>You vs the System</p>
+            <p>Rock 🪨 &nbsp; Paper 📄 &nbsp; Scissors ✂️</p>
+            <p>Let the battle begin! 😈🤖</p>
+            <br>
+            <input type="text" id="player-name-input" placeholder="Enter your name..." style="padding: 10px; font-family: inherit;">
+            <br><br>
+            <button onclick="startGame()">Start Fight</button>
         </div>
 
-        <h3 id="round-display">⚔️ Round 1</h3>
-
-        <div class="game-area">
-            <div id="status-message" class="message">The system is ready to challenge you.</div>
-            <div id="result-message" class="message"></div>
-        </div>
-
-        <div class="controls" id="controls">
-            <button onclick="playRound('rock')">🪨 Rock</button>
-            <button onclick="playRound('paper')">📄 Paper</button>
-            <button onclick="playRound('scissors')">✂️ Scissors</button>
+        <div id="game-screen" class="hidden">
+            <div class="scoreboard">
+                <span id="p-name-display">Player</span>: <span id="p-score">0</span> 
+                | 
+                System 🤖: <span id="s-score">0</span>
+            </div>
             
-            <button class="btn-exit" onclick="exitGame()">Exit Battle</button>
+            <div id="round-indicator" style="color: #888; margin-bottom: 10px;">⚔️ Round 1</div>
+
+            <div class="log-area" id="game-log">
+                The system is ready to challenge you.
+            </div>
+
+            <div class="controls" id="buttons-area">
+                <button onclick="playMove('rock')">🪨 Rock</button>
+                <button onclick="playMove('paper')">📄 Paper</button>
+                <button onclick="playMove('scissors')">✂️ Scissors</button>
+                <button class="btn-exit" onclick="endGame()">Exit</button>
+            </div>
         </div>
 
         <div id="end-screen" class="hidden">
-            <h2>🏳️ The battle has ended.</h2>
-            <p class="message" id="final-score-msg"></p>
+            <h2 style="color:white;">🏳️ The battle has ended.</h2>
+            <p id="final-score-msg"></p>
             <p>Thanks for playing Ultimate Battle With The System 💙</p>
-            <button onclick="location.reload()" style="background-color: #1f6feb; width: 100%;">Play Again</button>
+            <button onclick="location.reload()">Play Again</button>
         </div>
     </div>
 
     <script>
-        // --- GAME VARIABLES ---
+        // --- Variables from your Python script ---
+        let playerName = "Unknown Hero";
         let playerScore = 0;
         let systemScore = 0;
         let roundNumber = 1;
-        let playerName = "Unknown Hero";
         const choices = ["rock", "paper", "scissors"];
-        let isThinking = false; // To prevent clicking while system thinks
+        let isThinking = false; // Prevents clicking while System sleeps
 
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            // Mimicking the input() function
-            let inputName = prompt("Before we fight, tell me your name brave warrior:");
+        // --- Step 1: Start Game (The Setup) ---
+        function startGame() {
+            const inputName = document.getElementById("player-name-input").value.trim();
             
-            if (inputName && inputName.trim() !== "") {
-                playerName = inputName.trim();
+            if (inputName !== "") {
+                playerName = inputName;
+            } else {
+                playerName = "Unknown Hero";
             }
 
-            // Update UI with name
-            updateScoreboard();
-            document.getElementById('status-message').innerHTML = `🔥 Welcome <b>${playerName}</b>! The system is ready to challenge you.`;
-        };
-
-        // --- CORE LOGIC ---
-        function playRound(playerChoice) {
-            if (isThinking) return; // Prevent spamming buttons
-
-            // 1. Clear previous results
-            document.getElementById('result-message').innerText = "";
+            // Switch screens
+            document.getElementById("setup-screen").classList.add("hidden");
+            document.getElementById("game-screen").classList.remove("hidden");
             
-            // 2. Show thinking message (Mimics time.sleep)
-            document.getElementById('status-message').innerText = "⏳ The system is thinking...";
+            // Update Text
+            document.getElementById("p-name-display").innerText = playerName;
+            document.getElementById("game-log").innerHTML = `🔥 Welcome <b>${playerName}</b>! The system is ready to challenge you.`;
+        }
+
+        // --- Step 2: Main Game Loop (The logic) ---
+        function playMove(playerChoice) {
+            if (isThinking) return; // Don't let user click while system is thinking
+
+            const log = document.getElementById("game-log");
+            
+            // 1. "The system is thinking..." (time.sleep)
+            log.innerHTML = "⏳ The system is thinking...";
             isThinking = true;
 
-            // 3. Delay for 1 second (1000ms)
+            // 2. The Delay (1 second / 1000ms)
             setTimeout(() => {
                 const systemChoice = choices[Math.floor(Math.random() * choices.length)];
                 
-                // Determine Winner
-                let resultText = "";
-                let systemEmoji = "";
+                // Capitalize for display
+                const sysChoiceCap = systemChoice.charAt(0).toUpperCase() + systemChoice.slice(1);
+                
+                let resultMessage = "";
+                let logColorClass = "";
 
-                // Add emoji to system choice for display
-                if (systemChoice === "rock") systemEmoji = "🪨";
-                if (systemChoice === "paper") systemEmoji = "📄";
-                if (systemChoice === "scissors") systemEmoji = "✂️";
-
-                let roundLog = `<div class='system-choice'>🤖 System chose: ${capitalize(systemChoice)} ${systemEmoji}</div>`;
-
+                // 3. Compare Logic (Exact Python logic)
                 if (playerChoice === systemChoice) {
-                    resultText = "😮 It’s a draw! Both of you matched moves.";
+                    resultMessage = "😮 It’s a draw! Both of you matched moves.";
+                    logColorClass = "draw-text";
                 } else if (
                     (playerChoice === "rock" && systemChoice === "scissors") ||
                     (playerChoice === "paper" && systemChoice === "rock") ||
                     (playerChoice === "scissors" && systemChoice === "paper")
                 ) {
-                    resultText = "🎉 You win this round! The system didn’t see that coming.";
-                    playerScore++;
+                    resultMessage = "🎉 You win this round! The system didn’t see that coming.";
+                    playerScore += 1;
+                    logColorClass = "win-text";
                 } else {
-                    resultText = "💀 The system wins this round! AI power activated.";
-                    systemScore++;
+                    resultMessage = "💀 The system wins this round! AI power activated.";
+                    systemScore += 1;
+                    logColorClass = "lose-text";
                 }
 
-                // Update UI
-                document.getElementById('status-message').innerHTML = roundLog;
-                document.getElementById('result-message').innerText = resultText;
+                // 4. Update the Screen
+                let choiceMsg = `🤖 System chose: <b>${sysChoiceCap}</b>`;
+                log.innerHTML = `${choiceMsg}<br><br><span class="${logColorClass}">${resultMessage}</span>`;
                 
                 updateScoreboard();
                 
                 // Prepare next round
-                roundNumber++;
-                document.getElementById('round-display').innerText = `⚔️ Round ${roundNumber}`;
+                roundNumber += 1;
+                document.getElementById("round-indicator").innerText = `⚔️ Round ${roundNumber}`;
                 
-                isThinking = false;
-            }, 1000);
+                isThinking = false; // Allow clicking again
+
+            }, 1000); // 1000ms = 1 second delay
         }
 
-        function exitGame() {
-            // Hide controls and game area
-            document.getElementById('controls').classList.add('hidden');
-            document.getElementById('round-display').classList.add('hidden');
-            document.getElementById('status-message').classList.add('hidden');
-            document.getElementById('result-message').classList.add('hidden');
-            document.querySelector('.score-board').classList.add('hidden');
-            document.querySelector('h1').classList.add('hidden');
-            document.querySelector('p').classList.add('hidden');
-
-            // Show End Screen
-            document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('final-score-msg').innerHTML = 
-                `Final Score → ${playerName}: <b>${playerScore}</b> | System 🤖: <b>${systemScore}</b>`;
-        }
-
-        // --- HELPER FUNCTIONS ---
         function updateScoreboard() {
-            document.getElementById('player-score-display').innerText = `${playerName}: ${playerScore}`;
-            document.getElementById('system-score-display').innerText = `System 🤖: ${systemScore}`;
+            document.getElementById("p-score").innerText = playerScore;
+            document.getElementById("s-score").innerText = systemScore;
         }
 
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+        // --- Step 3: Exit Game ---
+        function endGame() {
+            document.getElementById("game-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.remove("hidden");
+            
+            document.getElementById("final-score-msg").innerHTML = 
+                `Final Score → ${playerName}: <b>${playerScore}</b> | System 🤖: <b>${systemScore}</b>`;
         }
     </script>
 </body>
