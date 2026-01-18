@@ -6,8 +6,8 @@
     <title>ULTIMATE BATTLE WITH THE SYSTEM</title>
     <style>
         body {
-            background-color: #121212; /* Terminal dark background */
-            color: #00ff41; /* Hacker/Terminal green */
+            background-color: #0c0c0c;
+            color: #00ff41;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
@@ -16,219 +16,235 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #fff;
-            text-shadow: 0 0 10px #00ff41;
-            font-size: 1.5rem;
         }
 
         .game-container {
             border: 2px solid #333;
             background-color: #000;
-            padding: 20px;
+            padding: 30px;
             width: 100%;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            max-width: 550px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.15);
+            text-align: center;
         }
 
         .scoreboard {
-            border-bottom: 1px dashed #555;
-            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
             margin-bottom: 20px;
-            font-size: 1.1rem;
+            font-weight: bold;
             color: #fff;
+        }
+
+        /* The Battle Arena with Hands */
+        .battle-arena {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            height: 120px;
+        }
+
+        .hand {
+            font-size: 80px;
+            transition: transform 0.1s;
+        }
+
+        .shake {
+            animation: shake 0.2s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
         }
 
         .log-area {
-            min-height: 150px;
-            margin-bottom: 20px;
-            font-size: 1rem;
-            line-height: 1.6;
+            min-height: 80px;
+            margin: 20px 0;
+            font-size: 1.1rem;
         }
 
         .controls {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
         }
 
         button {
-            background-color: #333;
-            color: #fff;
+            background-color: #1a1a1a;
+            color: #00ff41;
             border: 1px solid #00ff41;
-            padding: 10px 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1rem;
+            padding: 15px;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.2s;
+            border-radius: 5px;
         }
 
-        button:hover {
+        button:hover:not(:disabled) {
             background-color: #00ff41;
             color: #000;
         }
 
+        button:disabled {
+            border-color: #333;
+            color: #333;
+            cursor: not-allowed;
+        }
+
         .btn-exit {
+            grid-column: span 3;
+            margin-top: 10px;
             border-color: #ff4444;
             color: #ff4444;
         }
 
-        .btn-exit:hover {
-            background-color: #ff4444;
-            color: white;
+        .btn-exit:hover { background-color: #ff4444; color: #fff; }
+
+        input {
+            background: #111;
+            border: 1px solid #00ff41;
+            color: #fff;
+            padding: 10px;
+            font-family: inherit;
+            margin-bottom: 10px;
         }
 
         .hidden { display: none; }
-        
-        /* Specific text colors matching your vibe */
-        .system-text { color: #ffab00; }
-        .win-text { color: #00ff41; font-weight: bold; }
-        .lose-text { color: #ff4444; font-weight: bold; }
-        .draw-text { color: #00d2ff; }
+        .win { color: #00ff41; }
+        .lose { color: #ff4444; }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>⚔️ ULTIMATE BATTLE ⚔️</h1>
-        
         <div id="setup-screen">
-            <p>You vs the System</p>
-            <p>Rock 🪨 &nbsp; Paper 📄 &nbsp; Scissors ✂️</p>
-            <p>Let the battle begin! 😈🤖</p>
+            <h1>⚔️ ULTIMATE BATTLE ⚔️</h1>
+            <p>Rock 🪨 Paper 📄 Scissors ✂️</p>
+            <input type="text" id="name-input" placeholder="Enter Warrior Name...">
             <br>
-            <input type="text" id="player-name-input" placeholder="Enter your name..." style="padding: 10px; font-family: inherit;">
-            <br><br>
-            <button onclick="startGame()">Start Fight</button>
+            <button onclick="startGame()">LET THE BATTLE BEGIN! 😈</button>
         </div>
 
         <div id="game-screen" class="hidden">
             <div class="scoreboard">
-                <span id="p-name-display">Player</span>: <span id="p-score">0</span> 
-                | 
-                System 🤖: <span id="s-score">0</span>
-            </div>
-            
-            <div id="round-indicator" style="color: #888; margin-bottom: 10px;">⚔️ Round 1</div>
-
-            <div class="log-area" id="game-log">
-                The system is ready to challenge you.
+                <span id="display-p-name">Hero</span>: <span id="p-score">0</span>
+                <span>VS</span>
+                <span>System 🤖</span>: <span id="s-score">0</span>
             </div>
 
-            <div class="controls" id="buttons-area">
-                <button onclick="playMove('rock')">🪨 Rock</button>
-                <button onclick="playMove('paper')">📄 Paper</button>
-                <button onclick="playMove('scissors')">✂️ Scissors</button>
-                <button class="btn-exit" onclick="endGame()">Exit</button>
+            <div id="round-text" style="color:#888">Round 1</div>
+
+            <div class="battle-arena">
+                <div id="p-hand" class="hand">✊</div>
+                <div id="s-hand" class="hand">✊</div>
+            </div>
+
+            <div class="log-area" id="game-log">Choose your move...</div>
+
+            <div class="controls">
+                <button onclick="play('rock')" class="game-btn">🪨 Rock</button>
+                <button onclick="play('paper')" class="game-btn">📄 Paper</button>
+                <button onclick="play('scissors')" class="game-btn">✂️ Scissors</button>
+                <button onclick="exitGame()" class="btn-exit">🏳️ Exit Battle</button>
             </div>
         </div>
 
         <div id="end-screen" class="hidden">
-            <h2 style="color:white;">🏳️ The battle has ended.</h2>
-            <p id="final-score-msg"></p>
-            <p>Thanks for playing Ultimate Battle With The System 💙</p>
-            <button onclick="location.reload()">Play Again</button>
+            <h1>🏳️ BATTLE ENDED</h1>
+            <p id="final-result"></p>
+            <p>Thanks for playing 💙</p>
+            <button onclick="location.reload()">REMATCH</button>
         </div>
     </div>
 
     <script>
-        // --- Variables from your Python script ---
         let playerName = "Unknown Hero";
         let playerScore = 0;
         let systemScore = 0;
         let roundNumber = 1;
-        const choices = ["rock", "paper", "scissors"];
-        let isThinking = false; // Prevents clicking while System sleeps
+        const emojis = { rock: "✊", paper: "✋", scissors: "✌️" };
 
-        // --- Step 1: Start Game (The Setup) ---
         function startGame() {
-            const inputName = document.getElementById("player-name-input").value.trim();
+            const val = document.getElementById("name-input").value.trim();
+            if (val !== "") playerName = val;
             
-            if (inputName !== "") {
-                playerName = inputName;
-            } else {
-                playerName = "Unknown Hero";
-            }
-
-            // Switch screens
-            document.getElementById("setup-screen").classList.add("hidden");
-            document.getElementById("game-screen").classList.remove("hidden");
-            
-            // Update Text
-            document.getElementById("p-name-display").innerText = playerName;
-            document.getElementById("game-log").innerHTML = `🔥 Welcome <b>${playerName}</b>! The system is ready to challenge you.`;
+            document.getElementById("setup-screen").className = "hidden";
+            document.getElementById("game-screen").className = "";
+            document.getElementById("display-p-name").innerText = playerName;
+            document.getElementById("game-log").innerText = `🔥 Welcome ${playerName}! System is ready.`;
         }
 
-        // --- Step 2: Main Game Loop (The logic) ---
-        function playMove(playerChoice) {
-            if (isThinking) return; // Don't let user click while system is thinking
+        function play(playerMove) {
+            // Disable buttons during "thinking"
+            const buttons = document.querySelectorAll(".game-btn");
+            buttons.forEach(b => b.disabled = true);
 
+            const pHand = document.getElementById("p-hand");
+            const sHand = document.getElementById("s-hand");
             const log = document.getElementById("game-log");
+
+            // Reset hands to rock for the "shake"
+            pHand.innerText = "✊";
+            sHand.innerText = "✊";
+            pHand.classList.add("shake");
+            sHand.classList.add("shake");
             
-            // 1. "The system is thinking..." (time.sleep)
-            log.innerHTML = "⏳ The system is thinking...";
-            isThinking = true;
+            log.innerText = "⏳ The system is thinking...";
 
-            // 2. The Delay (1 second / 1000ms)
+            // 1 Second Delay (time.sleep)
             setTimeout(() => {
-                const systemChoice = choices[Math.floor(Math.random() * choices.length)];
-                
-                // Capitalize for display
-                const sysChoiceCap = systemChoice.charAt(0).toUpperCase() + systemChoice.slice(1);
-                
-                let resultMessage = "";
-                let logColorClass = "";
+                pHand.classList.remove("shake");
+                sHand.classList.remove("shake");
 
-                // 3. Compare Logic (Exact Python logic)
-                if (playerChoice === systemChoice) {
-                    resultMessage = "😮 It’s a draw! Both of you matched moves.";
-                    logColorClass = "draw-text";
+                const choices = ["rock", "paper", "scissors"];
+                const systemMove = choices[Math.floor(Math.random() * 3)];
+
+                // Show actual moves
+                pHand.innerText = emojis[playerMove];
+                sHand.innerText = emojis[systemMove];
+
+                let result = "";
+                let logClass = "";
+
+                // Game Logic
+                if (playerMove === systemMove) {
+                    result = "😮 It’s a draw! Both matched moves.";
                 } else if (
-                    (playerChoice === "rock" && systemChoice === "scissors") ||
-                    (playerChoice === "paper" && systemChoice === "rock") ||
-                    (playerChoice === "scissors" && systemChoice === "paper")
+                    (playerMove === "rock" && systemMove === "scissors") ||
+                    (playerMove === "paper" && systemMove === "rock") ||
+                    (playerMove === "scissors" && systemMove === "paper")
                 ) {
-                    resultMessage = "🎉 You win this round! The system didn’t see that coming.";
-                    playerScore += 1;
-                    logColorClass = "win-text";
+                    result = "🎉 You win this round! The system didn’t see that coming.";
+                    playerScore++;
+                    logClass = "win";
                 } else {
-                    resultMessage = "💀 The system wins this round! AI power activated.";
-                    systemScore += 1;
-                    logColorClass = "lose-text";
+                    result = "💀 The system wins this round! AI power activated.";
+                    systemScore++;
+                    logClass = "lose";
                 }
 
-                // 4. Update the Screen
-                let choiceMsg = `🤖 System chose: <b>${sysChoiceCap}</b>`;
-                log.innerHTML = `${choiceMsg}<br><br><span class="${logColorClass}">${resultMessage}</span>`;
+                // Update UI
+                log.innerHTML = `<span style="color:#fff">🤖 System chose: ${systemMove.toUpperCase()}</span><br><span class="${logClass}">${result}</span>`;
+                document.getElementById("p-score").innerText = playerScore;
+                document.getElementById("s-score").innerText = systemScore;
                 
-                updateScoreboard();
+                roundNumber++;
+                document.getElementById("round-text").innerText = `Round ${roundNumber}`;
                 
-                // Prepare next round
-                roundNumber += 1;
-                document.getElementById("round-indicator").innerText = `⚔️ Round ${roundNumber}`;
-                
-                isThinking = false; // Allow clicking again
-
-            }, 1000); // 1000ms = 1 second delay
+                buttons.forEach(b => b.disabled = false);
+            }, 1000);
         }
 
-        function updateScoreboard() {
-            document.getElementById("p-score").innerText = playerScore;
-            document.getElementById("s-score").innerText = systemScore;
-        }
-
-        // --- Step 3: Exit Game ---
-        function endGame() {
-            document.getElementById("game-screen").classList.add("hidden");
-            document.getElementById("end-screen").classList.remove("hidden");
-            
-            document.getElementById("final-score-msg").innerHTML = 
-                `Final Score → ${playerName}: <b>${playerScore}</b> | System 🤖: <b>${systemScore}</b>`;
+        function exitGame() {
+            document.getElementById("game-screen").className = "hidden";
+            document.getElementById("end-screen").className = "";
+            document.getElementById("final-result").innerHTML = 
+                `Final Score → ${playerName}: ${playerScore} | System 🤖: ${systemScore}`;
         }
     </script>
 </body>
