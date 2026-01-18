@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTIMATE BATTLE WITH THE SYSTEM</title>
+    <style>
+        /* CSS Styles to make it look like a "System" Interface */
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: #21262d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            border: 1px solid #30363d;
+        }
+
+        .game-area {
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #2ea043;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-exit {
+            background-color: #da3633;
+            grid-column: span 3; /* Make exit button full width */
+            margin-top: 10px;
+        }
+
+        .btn-exit:hover {
+            background-color: #f85149;
+        }
+
+        .system-choice {
+            font-size: 1.5em;
+            color: #d2a8ff; 
+            margin: 10px 0;
+        }
+
+        /* Hidden class to manage game state */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="game-container">
+        <h1>⚔️ ULTIMATE BATTLE ⚔️</h1>
+        <p>You vs the System<br>Rock 🪨  Paper 📄  Scissors ✂️</p>
+
+        <div class="score-board">
+            <span id="player-score-display">Unknown Hero: 0</span>
+            <span id="system-score-display">System 🤖: 0</span>
+        </div>
+
+        <h3 id="round-display">⚔️ Round 1</h3>
+
+        <div class="game-area">
+            <div id="status-message" class="message">The system is ready to challenge you.</div>
+            <div id="result-message" class="message"></div>
+        </div>
+
+        <div class="controls" id="controls">
+            <button onclick="playRound('rock')">🪨 Rock</button>
+            <button onclick="playRound('paper')">📄 Paper</button>
+            <button onclick="playRound('scissors')">✂️ Scissors</button>
+            
+            <button class="btn-exit" onclick="exitGame()">Exit Battle</button>
+        </div>
+
+        <div id="end-screen" class="hidden">
+            <h2>🏳️ The battle has ended.</h2>
+            <p class="message" id="final-score-msg"></p>
+            <p>Thanks for playing Ultimate Battle With The System 💙</p>
+            <button onclick="location.reload()" style="background-color: #1f6feb; width: 100%;">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME VARIABLES ---
+        let playerScore = 0;
+        let systemScore = 0;
+        let roundNumber = 1;
+        let playerName = "Unknown Hero";
+        const choices = ["rock", "paper", "scissors"];
+        let isThinking = false; // To prevent clicking while system thinks
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // Mimicking the input() function
+            let inputName = prompt("Before we fight, tell me your name brave warrior:");
+            
+            if (inputName && inputName.trim() !== "") {
+                playerName = inputName.trim();
+            }
+
+            // Update UI with name
+            updateScoreboard();
+            document.getElementById('status-message').innerHTML = `🔥 Welcome <b>${playerName}</b>! The system is ready to challenge you.`;
+        };
+
+        // --- CORE LOGIC ---
+        function playRound(playerChoice) {
+            if (isThinking) return; // Prevent spamming buttons
+
+            // 1. Clear previous results
+            document.getElementById('result-message').innerText = "";
+            
+            // 2. Show thinking message (Mimics time.sleep)
+            document.getElementById('status-message').innerText = "⏳ The system is thinking...";
+            isThinking = true;
+
+            // 3. Delay for 1 second (1000ms)
+            setTimeout(() => {
+                const systemChoice = choices[Math.floor(Math.random() * choices.length)];
+                
+                // Determine Winner
+                let resultText = "";
+                let systemEmoji = "";
+
+                // Add emoji to system choice for display
+                if (systemChoice === "rock") systemEmoji = "🪨";
+                if (systemChoice === "paper") systemEmoji = "📄";
+                if (systemChoice === "scissors") systemEmoji = "✂️";
+
+                let roundLog = `<div class='system-choice'>🤖 System chose: ${capitalize(systemChoice)} ${systemEmoji}</div>`;
+
+                if (playerChoice === systemChoice) {
+                    resultText = "😮 It’s a draw! Both of you matched moves.";
+                } else if (
+                    (playerChoice === "rock" && systemChoice === "scissors") ||
+                    (playerChoice === "paper" && systemChoice === "rock") ||
+                    (playerChoice === "scissors" && systemChoice === "paper")
+                ) {
+                    resultText = "🎉 You win this round! The system didn’t see that coming.";
+                    playerScore++;
+                } else {
+                    resultText = "💀 The system wins this round! AI power activated.";
+                    systemScore++;
+                }
+
+                // Update UI
+                document.getElementById('status-message').innerHTML = roundLog;
+                document.getElementById('result-message').innerText = resultText;
+                
+                updateScoreboard();
+                
+                // Prepare next round
+                roundNumber++;
+                document.getElementById('round-display').innerText = `⚔️ Round ${roundNumber}`;
+                
+                isThinking = false;
+            }, 1000);
+        }
+
+        function exitGame() {
+            // Hide controls and game area
+            document.getElementById('controls').classList.add('hidden');
+            document.getElementById('round-display').classList.add('hidden');
+            document.getElementById('status-message').classList.add('hidden');
+            document.getElementById('result-message').classList.add('hidden');
+            document.querySelector('.score-board').classList.add('hidden');
+            document.querySelector('h1').classList.add('hidden');
+            document.querySelector('p').classList.add('hidden');
+
+            // Show End Screen
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('final-score-msg').innerHTML = 
+                `Final Score → ${playerName}: <b>${playerScore}</b> | System 🤖: <b>${systemScore}</b>`;
+        }
+
+        // --- HELPER FUNCTIONS ---
+        function updateScoreboard() {
+            document.getElementById('player-score-display').innerText = `${playerName}: ${playerScore}`;
+            document.getElementById('system-score-display').innerText = `System 🤖: ${systemScore}`;
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>
