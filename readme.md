@@ -29,6 +29,3 @@ The game was originally designed in Python using the `random` and `time` modules
 - The `1.0s` delay to simulate system thinking.
 - The "Unknown Hero" default naming logic.
 - The exact victory and defeat dialogue from the original script.
-
----
-**Developed by a Brave Warrior.** 🛡️
